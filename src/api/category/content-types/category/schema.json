@@ -1,0 +1,23 @@
+{
+  "kind": "collectionType",
+  "collectionName": "categories",
+  "info": {
+    "singularName": "category",
+    "pluralName": "categories",
+    "displayName": "category"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "nome": {
+      "type": "string"
+    },
+    "dish": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::dish.dish",
+      "mappedBy": "category"
+    }
+  }
+}

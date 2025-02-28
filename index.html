@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu del Ristorante</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .menu { display: flex; flex-wrap: wrap; gap: 20px; }
+        .dish { border: 1px solid #ddd; padding: 10px; width: 250px; text-align: center; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+
+    <h1>Menu del Ristorante</h1>
+    <div class="menu" id="menu"></div>
+
+    <script>
+        async function fetchMenu() {
+            try {
+                const response = await fetch("http://localhost:1337/api/dishes?populate=*");
+        
+                if (!response.ok) {
+                    throw new Error(`Errore HTTP: ${response.status}`);
+                }
+        
+                const data = await response.json();
+        
+                // Controllo se i dati esistono
+                if (!data || !data.data || !Array.isArray(data.data)) {
+                    throw new Error("Formato API non valido");
+                }
+        
+                const dishes = data.data;
+                const menuContainer = document.getElementById("menu");
+                menuContainer.innerHTML = "";
+        
+                dishes.forEach(dish => {
+                    // Controllo che attributes esista
+                    if (!dish) {
+                        console.warn("Piatto senza dati:", dish);
+                        return;
+                    }
+        
+                    const { nome, descrizione, prezzo, immagine } = dish;
+        
+                    // Estrarre il testo dalla descrizione (è un array di oggetti)
+                    let descriptionText = descrizione && Array.isArray(descrizione) && descrizione.length > 0 
+                        ? descrizione.map(d => d.children.map(c => c.text).join(" ")).join(" ")
+                        : "Descrizione non disponibile";
+        
+                    let imageUrl = immagine?.url 
+                        ? `http://localhost:1337${immagine.url}`
+                        : "https://via.placeholder.com/250";
+        
+                    const dishElement = document.createElement("div");
+                    dishElement.classList.add("dish");
+        
+                    dishElement.innerHTML = `
+                        <h2>${nome || "Nome non disponibile"}</h2>
+                        <img src="${imageUrl}" alt="${nome || "Immagine non disponibile"}">
+                        <p>${descriptionText}</p>
+                        <p><strong>€${prezzo ? prezzo.toFixed(2) : "Prezzo non disponibile"}</strong></p>
+                    `;
+        
+                    menuContainer.appendChild(dishElement);
+                });
+            } catch (error) {
+                console.error("Errore nel caricamento del menu:", error);
+            }
+        }
+        
+        fetchMenu();
+        
+    </script>
+
+</body>
+</html>
