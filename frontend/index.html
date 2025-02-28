@@ -19,7 +19,7 @@
     <script>
         async function fetchMenu() {
             try {
-                const response = await fetch("http://localhost:1337/api/dishes?populate=*");
+                const response = await fetch("https://mio-strapi.railway.app/api/dishes?populate=*");
         
                 if (!response.ok) {
                     throw new Error(`Errore HTTP: ${response.status}`);
